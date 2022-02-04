@@ -3,7 +3,7 @@ import request from 'utils/request.js'
 const api = {}
 
 //用户登录api接口
-api.login=(code,avatarUrl,nickname,gender) => request.post('/user/login?code='+code+'&avatarUrl='+avatarUrl+'&nickname='+nickname+'&gender='+gender)
+api.login=(data) => request.post('/user/login', data)
 
 //delete请求示例
 api.admUpdataRole=(id) => request.delete('/user?id=',id)

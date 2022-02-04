@@ -2,72 +2,62 @@ import WXlogin from './WXlogin.js'
 
 const request = {}
 const headers = {}
-const baseUrl = "http://8.129.44.6:8002" 
+// const baseUrl = "http://120.76.200.109:8030" 
+const baseUrl = "http://localhost:8030" 
+
+//39.108.220.199
+let cookie = ''
 
 request.getbaseUrl =() =>{
  return	baseUrl
 } 
 
-request.post = (url, parmas) => {
-	let token = uni.getStorageSync('token')
-	uni.showLoading({
-		title:"加载中"
-	})
+request.post = (url, data) => {
+	headers["Cookie"] = cookie //设置请求头cookie
 	return uni.request({
-		url: baseUrl + url, 
+		url: baseUrl + url,
 		method: "POST",
-		data: parmas,
-		// dataType: 'json',
-		header: {
-		    "content-type": "application/x-www-form-urlencoded", 
-		    "token": token,
-			// "status": 0 
-		},
+		data: data,
+		dataType: 'json',
+		header: headers
 	}).then(res => {
-		// if(res[1].statusCode == 423){
-		// 	uni.showLoading({
-		// 	    title: '正在重新登陆...', 
-		// 	});
-		// 	WXlogin.wxlogin()
-		// 	setTimeout(function () {
-		// 	    uni.hideLoading();
-		// 	}, 2000);
-		// }
-		// if (res[1].header['Set-Cookie']) {
-		// 	let cookies = res[1].header['Set-Cookie'].split(';')
-		// 	for (let i = 0; i < cookies.length; i++) {
-		// 		if (cookies[i].indexOf("JSESSIONID") != -1) {
-		// 			cookie = cookies[i]
-		// 			break
-		// 		}
-		// 	}
-		// }
-		uni.hideLoading()
+		if(res[1].statusCode == 423){
+			console.log("重新登陆")
+			uni.showLoading({
+			    title: '正在重新登陆...', 
+			});
+			WXlogin.wxlogin()
+			setTimeout(function () {
+			    uni.hideLoading();
+			}, 2000);
+		}
+		if (res[1].header['Set-Cookie']) {
+			let cookies = res[1].header['Set-Cookie'].split(';')
+			for (let i = 0; i < cookies.length; i++) {
+				if (cookies[i].indexOf("JSESSIONID") != -1) {
+					cookie = cookies[i]
+					break
+				}
+			}
+		}
 		return res[1].data
 	}).catch(resp => {
-		
 	})
 }
 
-request.get = (url,parmas) => {
-	let token = uni.getStorageSync('token')
-	uni.showLoading({
-		title:"加载中"
-	})
+request.get = (url, parmas) => {
+	headers["Cookie"] = cookie //设置请求头cookie
 	return uni.request({
 		url: baseUrl + url,
-		data: parmas,
 		method: "GET",
+		data: parmas,
 		dataType: 'json',
-		header: {
-		    "content-type": "application/x-www-form-urlencoded",
-		    "token": token
-		},
+		header: headers
 	}).then(res => {
-		// if(res[1].statusCode == 423){
-		// 	WXlogin.wxlogin()
-		// }
-		uni.hideLoading()
+		if(res[1].statusCode == 423){
+			console.log("重新登陆")
+			WXlogin.wxlogin()
+		}
 		return res[1].data
 	}).catch(resp => {
 
@@ -75,49 +65,36 @@ request.get = (url,parmas) => {
 }
 
 request.put = (url, data) => {
-	uni.showLoading({
-		title:"加载中"
-	})
-	let token = uni.getStorageSync('token')
+	headers["Cookie"] = cookie //设置请求头cookie
 	return uni.request({
 		url: baseUrl + url,
 		method: "PUT",
 		data: data,
 		dataType: 'json',
-		header: {
-		    "content-type": "application/json",
-		    "token": token
-		},
+		header: headers
 	}).then(res => {
-		// if(res[1].statusCode == 423){
-		// 	WXlogin.wxlogin()
-		// }
-		uni.hideLoading()
+		if(res[1].statusCode == 423){
+			console.log("重新登陆")
+			WXlogin.wxlogin()
+		}
 		return res[1].data
 	}).catch(resp => {
 
 	})
 }
 
-request.delete = (url, data) => {
-	uni.showLoading({
-		title:"加载中"
-	})
-	let token = uni.getStorageSync('token')
+request.delete = (url, id) => {
+	headers["Cookie"] = cookie //设置请求头cookie
 	return uni.request({
-		url: baseUrl + url + data,
+		url: baseUrl + url + '/' + id,
 		method: "DELETE",
 		dataType: 'json',
-		header: {
-		    // "content-type": "application/x-www-form-urlencoded",
-		    "token": token,
-			//"Cookie": cookie
-		},
+		header: headers
 	}).then(res => {
-		// if(res[1].statusCode == 423){
-		// 	WXlogin.wxlogin()
-		// }
-		uni.hideLoading()
+		if(res[1].statusCode == 423){
+			console.log("重新登陆")
+			WXlogin.wxlogin()
+		}
 		return res[1].data
 	}).catch(resp => {
 
@@ -125,19 +102,16 @@ request.delete = (url, data) => {
 }
 
 request.upload = (url, file) => {
-	let token = uni.getStorageSync('token')
+	headers["Cookie"] = cookie //设置请求头cookie
 	return uni.uploadFile({
 		url:  baseUrl + url,
 		filePath: file,
 		name: "img",
 		fileType: "image",
-		header: {
-		    "content-type": "application/json",
-		    "token": token,
-			"Cookie": cookie
-		},
+		header:headers
 	}).then(res => {
 		if(res[1].statusCode == 423){
+			console.log("重新登陆")
 			WXlogin.wxlogin()
 		}
 		return res[1].data

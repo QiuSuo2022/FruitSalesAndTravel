@@ -10,56 +10,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });exports.createApp = createApp;exports.createComponent = createComponent;exports.createPage = createPage;exports.createPlugin = createPlugin;exports.createSubpackageApp = createSubpackageApp;exports.default = void 0;var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 2));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _slicedToArray(arr, i) {return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();}function _nonIterableRest() {throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}function _iterableToArrayLimit(arr, i) {if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;var _arr = [];var _n = true;var _d = false;var _e = undefined;try {for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {_arr.push(_s.value);if (i && _arr.length === i) break;}} catch (err) {_d = true;_e = err;} finally {try {if (!_n && _i["return"] != null) _i["return"]();} finally {if (_d) throw _e;}}return _arr;}function _arrayWithHoles(arr) {if (Array.isArray(arr)) return arr;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}function _toConsumableArray(arr) {return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();}function _nonIterableSpread() {throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}function _unsupportedIterableToArray(o, minLen) {if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);}function _iterableToArray(iter) {if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);}function _arrayWithoutHoles(arr) {if (Array.isArray(arr)) return _arrayLikeToArray(arr);}function _arrayLikeToArray(arr, len) {if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {arr2[i] = arr[i];}return arr2;}
 
-function b64DecodeUnicode(str) {
-  return decodeURIComponent(atob(str).split('').map(function (c) {
-    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(''));
-}
-
-function getCurrentUserInfo() {
-  var token = wx.getStorageSync('uni_id_token') || '';
-  var tokenArr = token.split('.');
-  if (!token || tokenArr.length !== 3) {
-    return {
-      uid: null,
-      role: [],
-      permission: [],
-      tokenExpired: 0 };
-
-  }
-  var userInfo;
-  try {
-    userInfo = JSON.parse(b64DecodeUnicode(tokenArr[1]));
-  } catch (error) {
-    throw new Error('获取当前用户信息出错，详细错误信息为：' + error.message);
-  }
-  userInfo.tokenExpired = userInfo.exp * 1000;
-  delete userInfo.exp;
-  delete userInfo.iat;
-  return userInfo;
-}
-
-function uniIdMixin(Vue) {
-  Vue.prototype.uniIDHasRole = function (roleId) {var _getCurrentUserInfo =
-
-
-    getCurrentUserInfo(),role = _getCurrentUserInfo.role;
-    return role.indexOf(roleId) > -1;
-  };
-  Vue.prototype.uniIDHasPermission = function (permissionId) {var _getCurrentUserInfo2 =
-
-
-    getCurrentUserInfo(),permission = _getCurrentUserInfo2.permission;
-    return this.uniIDHasRole('admin') || permission.indexOf(permissionId) > -1;
-  };
-  Vue.prototype.uniIDTokenValid = function () {var _getCurrentUserInfo3 =
-
-
-    getCurrentUserInfo(),tokenExpired = _getCurrentUserInfo3.tokenExpired;
-    return tokenExpired > Date.now();
-  };
-}
-
 var _toString = Object.prototype.toString;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -282,14 +232,10 @@ var promiseInterceptor = {
     if (!isPromise(res)) {
       return res;
     }
-    return new Promise(function (resolve, reject) {
-      res.then(function (res) {
-        if (res[0]) {
-          reject(res[0]);
-        } else {
-          resolve(res[1]);
-        }
-      });
+    return res.then(function (res) {
+      return res[1];
+    }).catch(function (res) {
+      return res[0];
     });
   } };
 
@@ -983,11 +929,6 @@ function initProperties(props) {var isBehavior = arguments.length > 1 && argumen
       type: Object,
       value: null };
 
-    // scopedSlotsCompiler auto
-    properties.scopedSlotsCompiler = {
-      type: String,
-      value: '' };
-
     properties.vueSlots = { // 小程序不能直接定义 $slots 的 props，所以通过 vueSlots 转换到 $slots
       type: null,
       value: [],
@@ -1383,14 +1324,11 @@ function initScopedSlotsParams() {
   };
 
   _vue.default.prototype.$setScopedSlotsParams = function (name, value) {
-    var vueIds = this.$options.propsData.vueId;
-    if (vueIds) {
-      var vueId = vueIds.split(',')[0];
-      var object = center[vueId] = center[vueId] || {};
-      object[name] = value;
-      if (parents[vueId]) {
-        parents[vueId].$forceUpdate();
-      }
+    var vueId = this.$options.propsData.vueId;
+    var object = center[vueId] = center[vueId] || {};
+    object[name] = value;
+    if (parents[vueId]) {
+      parents[vueId].$forceUpdate();
     }
   };
 
@@ -1417,7 +1355,6 @@ function parseBaseApp(vm, _ref3)
   if (vm.$options.store) {
     _vue.default.prototype.$store = vm.$options.store;
   }
-  uniIdMixin(_vue.default);
 
   _vue.default.prototype.mpHost = "mp-weixin";
 
@@ -1796,7 +1733,6 @@ function createSubpackageApp(vm) {
   var app = getApp({
     allowDefault: true });
 
-  vm.$scope = app;
   var globalData = app.globalData;
   if (globalData) {
     Object.keys(appOptions.globalData).forEach(function (name) {
@@ -1812,17 +1748,17 @@ function createSubpackageApp(vm) {
   });
   if (isFn(appOptions.onShow) && wx.onAppShow) {
     wx.onAppShow(function () {for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {args[_key5] = arguments[_key5];}
-      vm.__call_hook('onShow', args);
+      appOptions.onShow.apply(app, args);
     });
   }
   if (isFn(appOptions.onHide) && wx.onAppHide) {
     wx.onAppHide(function () {for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {args[_key6] = arguments[_key6];}
-      vm.__call_hook('onHide', args);
+      appOptions.onHide.apply(app, args);
     });
   }
   if (isFn(appOptions.onLaunch)) {
     var args = wx.getLaunchOptionsSync && wx.getLaunchOptionsSync();
-    vm.__call_hook('onLaunch', args);
+    appOptions.onLaunch.call(app, args);
   }
   return vm;
 }
@@ -6683,7 +6619,7 @@ function initProps (vm, propsOptions) {
       defineReactive$$1(props, key, value, function () {
         if (!isRoot && !isUpdatingChildComponent) {
           {
-            if(vm.mpHost === 'mp-baidu' || vm.mpHost === 'mp-kuaishou'){//百度、快手 observer 在 setData callback 之后触发，直接忽略该 warn
+            if(vm.mpHost === 'mp-baidu'){//百度 observer 在 setData callback 之后触发，直接忽略该 warn
                 return
             }
             //fixed by xxxxxx __next_tick_pending,uni://form-field 时不告警
@@ -7530,8 +7466,7 @@ function _diff(current, pre, path, result) {
                 var currentType = type(currentValue);
                 var preType = type(preValue);
                 if (currentType != ARRAYTYPE && currentType != OBJECTTYPE) {
-                    // NOTE 此处将 != 修改为 !==。涉及地方太多恐怕测试不到，如果出现数据对比问题，将其修改回来。
-                    if (currentValue !== pre[key]) {
+                    if (currentValue != pre[key]) {
                         setResult(result, (path == '' ? '' : path + ".") + key, currentValue);
                     }
                 } else if (currentType == ARRAYTYPE) {
@@ -8113,9 +8048,9 @@ internalMixin(Vue);
 /***/ }),
 
 /***/ 25:
-/*!**************************************************!*\
-  !*** E:/github/FruitSalesAndTravel/utils/api.js ***!
-  \**************************************************/
+/*!*****************************************************!*\
+  !*** E:/github/FruitSalesAndTravelWeb/utils/api.js ***!
+  \*****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8125,7 +8060,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 var api = {};
 
 //用户登录api接口
-api.login = function (code, avatarUrl, nickname, gender) {return _request.default.post('/user/login?code=' + code + '&avatarUrl=' + avatarUrl + '&nickname=' + nickname + '&gender=' + gender);};
+api.login = function (data) {return _request.default.post('/user/login', data);};
 
 //delete请求示例
 api.admUpdataRole = function (id) {return _request.default.delete('/user?id=', id);};
@@ -8141,9 +8076,9 @@ api;exports.default = _default;
 /***/ }),
 
 /***/ 26:
-/*!******************************************************!*\
-  !*** E:/github/FruitSalesAndTravel/utils/request.js ***!
-  \******************************************************/
+/*!*********************************************************!*\
+  !*** E:/github/FruitSalesAndTravelWeb/utils/request.js ***!
+  \*********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8152,72 +8087,62 @@ api;exports.default = _default;
 
 var request = {};
 var headers = {};
-var baseUrl = "http://8.129.44.6:8002";
+// const baseUrl = "http://120.76.200.109:8030" 
+var baseUrl = "http://localhost:8030";
+
+//39.108.220.199
+var cookie = '';
 
 request.getbaseUrl = function () {
   return baseUrl;
 };
 
-request.post = function (url, parmas) {
-  var token = uni.getStorageSync('token');
-  uni.showLoading({
-    title: "加载中" });
-
+request.post = function (url, data) {
+  headers["Cookie"] = cookie; //设置请求头cookie
   return uni.request({
     url: baseUrl + url,
     method: "POST",
-    data: parmas,
-    // dataType: 'json',
-    header: {
-      "content-type": "application/x-www-form-urlencoded",
-      "token": token
-      // "status": 0 
-    } }).
+    data: data,
+    dataType: 'json',
+    header: headers }).
   then(function (res) {
-    // if(res[1].statusCode == 423){
-    // 	uni.showLoading({
-    // 	    title: '正在重新登陆...', 
-    // 	});
-    // 	WXlogin.wxlogin()
-    // 	setTimeout(function () {
-    // 	    uni.hideLoading();
-    // 	}, 2000);
-    // }
-    // if (res[1].header['Set-Cookie']) {
-    // 	let cookies = res[1].header['Set-Cookie'].split(';')
-    // 	for (let i = 0; i < cookies.length; i++) {
-    // 		if (cookies[i].indexOf("JSESSIONID") != -1) {
-    // 			cookie = cookies[i]
-    // 			break
-    // 		}
-    // 	}
-    // }
-    uni.hideLoading();
+    if (res[1].statusCode == 423) {
+      console.log("重新登陆");
+      uni.showLoading({
+        title: '正在重新登陆...' });
+
+      _WXlogin.default.wxlogin();
+      setTimeout(function () {
+        uni.hideLoading();
+      }, 2000);
+    }
+    if (res[1].header['Set-Cookie']) {
+      var cookies = res[1].header['Set-Cookie'].split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        if (cookies[i].indexOf("JSESSIONID") != -1) {
+          cookie = cookies[i];
+          break;
+        }
+      }
+    }
     return res[1].data;
   }).catch(function (resp) {
-
   });
 };
 
 request.get = function (url, parmas) {
-  var token = uni.getStorageSync('token');
-  uni.showLoading({
-    title: "加载中" });
-
+  headers["Cookie"] = cookie; //设置请求头cookie
   return uni.request({
     url: baseUrl + url,
-    data: parmas,
     method: "GET",
+    data: parmas,
     dataType: 'json',
-    header: {
-      "content-type": "application/x-www-form-urlencoded",
-      "token": token } }).
-
+    header: headers }).
   then(function (res) {
-    // if(res[1].statusCode == 423){
-    // 	WXlogin.wxlogin()
-    // }
-    uni.hideLoading();
+    if (res[1].statusCode == 423) {
+      console.log("重新登陆");
+      _WXlogin.default.wxlogin();
+    }
     return res[1].data;
   }).catch(function (resp) {
 
@@ -8225,49 +8150,36 @@ request.get = function (url, parmas) {
 };
 
 request.put = function (url, data) {
-  uni.showLoading({
-    title: "加载中" });
-
-  var token = uni.getStorageSync('token');
+  headers["Cookie"] = cookie; //设置请求头cookie
   return uni.request({
     url: baseUrl + url,
     method: "PUT",
     data: data,
     dataType: 'json',
-    header: {
-      "content-type": "application/json",
-      "token": token } }).
-
+    header: headers }).
   then(function (res) {
-    // if(res[1].statusCode == 423){
-    // 	WXlogin.wxlogin()
-    // }
-    uni.hideLoading();
+    if (res[1].statusCode == 423) {
+      console.log("重新登陆");
+      _WXlogin.default.wxlogin();
+    }
     return res[1].data;
   }).catch(function (resp) {
 
   });
 };
 
-request.delete = function (url, data) {
-  uni.showLoading({
-    title: "加载中" });
-
-  var token = uni.getStorageSync('token');
+request.delete = function (url, id) {
+  headers["Cookie"] = cookie; //设置请求头cookie
   return uni.request({
-    url: baseUrl + url + data,
+    url: baseUrl + url + '/' + id,
     method: "DELETE",
     dataType: 'json',
-    header: {
-      // "content-type": "application/x-www-form-urlencoded",
-      "token": token
-      //"Cookie": cookie
-    } }).
+    header: headers }).
   then(function (res) {
-    // if(res[1].statusCode == 423){
-    // 	WXlogin.wxlogin()
-    // }
-    uni.hideLoading();
+    if (res[1].statusCode == 423) {
+      console.log("重新登陆");
+      _WXlogin.default.wxlogin();
+    }
     return res[1].data;
   }).catch(function (resp) {
 
@@ -8275,19 +8187,16 @@ request.delete = function (url, data) {
 };
 
 request.upload = function (url, file) {
-  var token = uni.getStorageSync('token');
+  headers["Cookie"] = cookie; //设置请求头cookie
   return uni.uploadFile({
     url: baseUrl + url,
     filePath: file,
     name: "img",
     fileType: "image",
-    header: {
-      "content-type": "application/json",
-      "token": token,
-      "Cookie": cookie } }).
-
+    header: headers }).
   then(function (res) {
     if (res[1].statusCode == 423) {
+      console.log("重新登陆");
       _WXlogin.default.wxlogin();
     }
     return res[1].data;
@@ -8306,9 +8215,9 @@ request;exports.default = _default;
 /***/ }),
 
 /***/ 27:
-/*!******************************************************!*\
-  !*** E:/github/FruitSalesAndTravel/utils/WXlogin.js ***!
-  \******************************************************/
+/*!*********************************************************!*\
+  !*** E:/github/FruitSalesAndTravelWeb/utils/WXlogin.js ***!
+  \*********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8371,9 +8280,9 @@ module.exports = g;
 /***/ }),
 
 /***/ 4:
-/*!************************************************!*\
-  !*** E:/github/FruitSalesAndTravel/pages.json ***!
-  \************************************************/
+/*!***************************************************!*\
+  !*** E:/github/FruitSalesAndTravelWeb/pages.json ***!
+  \***************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 

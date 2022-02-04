@@ -1,12 +1,12 @@
 <template>
 	<view>
 		<button @click="getUserProfile()">微信登录</button>
-		
+
 		<!-- colorui -->
 		<button type="primary">引入Color UI</button>
 
-		
-		
+
+
 	</view>
 </template>
 
@@ -15,7 +15,9 @@
 	export default {
 		data() {
 			return {
-				userInfo: {}
+				userInfo: {
+					
+				}
 			}
 		},
 		methods: {
@@ -29,24 +31,29 @@
 						that.bindGetUserInfo()
 					}
 				})
-			
+
 			},
 			bindGetUserInfo(e) {
 				let that = this
 				wx.login({
 					success(res) {
-						console.log(res.code)//获得token参数
+						console.log(res.code) //获得token参数
 						uni.showLoading({
 							title: "登录中"
 						})
 						//api请求
-						api.login(res.code,that.userInfo.avatarUrl,that.userInfo.nickName,that.userInfo.gender).then((data) => {
-							console.log(data)
-							uni.hideLoading()
-							//将用户信息和token存在本地
-							uni.setStorageSync("user", data.data.data)
-							uni.setStorageSync('token', data.data.data.token)
-						})
+						api.login({
+							code: res.code, 
+							avatarUrl: that.userInfo.avatarUrl, 
+							nickName: that.userInfo.nickName, 
+							gender: that.userInfo.gender
+						}).then((data) => {
+								console.log(data)
+								uni.hideLoading()
+								//将用户信息和token存在本地
+								uni.setStorageSync("user", data.data)
+								uni.setStorageSync('token', data.data.token)
+							})
 					}
 				})
 			},
