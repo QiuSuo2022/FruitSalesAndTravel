@@ -143,6 +143,98 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var _api = _interopRequireDefault(__webpack_require__(/*! ../../utils/api.js */ 25));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //
 //
 //
@@ -155,40 +247,104 @@ var _api = _interopRequireDefault(__webpack_require__(/*! ../../utils/api.js */ 
 //
 //
 //
-var _default = { data: function data() {return { userInfo: {} };}, methods: { getUserProfile: function getUserProfile(e) {var that = this;wx.getUserProfile({
-        desc: '用于完善会员资料', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
-        success: function success(res) {
-          console.log(res);
-          that.userInfo = res.userInfo;
-          that.bindGetUserInfo();
-        } });
-
-
-    },
-    bindGetUserInfo: function bindGetUserInfo(e) {
-      var that = this;
-      wx.login({
-        success: function success(res) {
-          console.log(res.code); //获得token参数
-          uni.showLoading({
-            title: "登录中" });
-
-          //api请求
-          _api.default.login({
-            code: res.code,
-            avatarUrl: that.userInfo.avatarUrl,
-            nickName: that.userInfo.nickName,
-            gender: that.userInfo.gender }).
-          then(function (data) {
-            console.log(data);
-            uni.hideLoading();
-            //将用户信息和token存在本地
-            uni.setStorageSync("user", data.data);
-            uni.setStorageSync('token', data.data.token);
-          });
-        } });
-
-    } } };exports.default = _default;
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var _default = { data: function data() {return { userName: "", avatarUrl: "", userStatus: "", userInfo: {} };}, methods: { getUserProfile: function getUserProfile() {var that = this;wx.getUserProfile({ desc: '用于完善会员资料', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
+        success: function success(res) {console.log(res);that.userInfo = res.userInfo;that.bindGetUserInfo();} });}, bindGetUserInfo: function bindGetUserInfo() {var that = this;wx.login({ success: function success(res) {console.log(res.code); //获得token参数
+          uni.showLoading({ title: "登录中" }); //api请求
+          _api.default.login({ code: res.code, avatarUrl: that.userInfo.avatarUrl, nickName: that.userInfo.nickName, gender: that.userInfo.gender }).then(function (data) {uni.hideLoading(); //将用户信息和token存在本地
+            var user = data.data;uni.setStorageSync("user", user);uni.setStorageSync('token', user.token);that.userName = user.userName;that.avatarUrl = user.avatarUrl;that.userStatus = user.status;});} });}, jump: function jump() {wx.navigateTo({ url: "../user_details/user_details" });}, tapMyPost: function tapMyPost() {wx.navigateTo({ url: "../mypost/mypost" });}, toMyReply: function toMyReply() {wx.navigateTo({ url: "../my_reply/my_reply" });}, feedback: function feedback() {wx.navigateTo({ url: "../feedback/feedback" });}, goToperfect: function goToperfect() {//用来跳转到信息完善界面
+      if (this.UserStatus === 3) {uni.showToast({ title: "请您先登录再完成实名认证！", icon: "none" });} else {uni.navigateTo({ url: '../perfect/perfect' });}} }, mounted: function mounted() {var user = uni.getStorageSync('user');console.log("here");console.log(user);if (user) {this.userName = user.userName;this.avatarUrl = user.avatarUrl;this.userStatus = user.status;}} };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
