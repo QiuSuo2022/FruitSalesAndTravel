@@ -1,7 +1,10 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/mine/mine"
+    "pages/mine/mine",
+    "pages/feedback/feedback",
+    "pages/perfect/perfect",
+    "pages/user_details/user_details"
   ],
   "subPackages": [],
   "window": {
@@ -30,6 +33,5 @@
       }
     ]
   },
-  "usingComponents": {},
-  "sitemapLocation": "sitemap22.json"
+  "usingComponents": {}
 }

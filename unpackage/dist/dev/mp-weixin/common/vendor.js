@@ -1999,6 +1999,219 @@ function normalizeComponent (
 
 /***/ }),
 
+/***/ 11:
+/*!*****************************************************!*\
+  !*** E:/github/FruitSalesAndTravelWeb/utils/api.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _request = _interopRequireDefault(__webpack_require__(/*! utils/request.js */ 12));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+
+var api = {};
+
+//用户登录api接口
+api.login = function (data) {return _request.default.post('/user/login', data);};
+
+//用户登录api接口
+api.getUserInfo = function (token) {return _request.default.get('/user/info?token=' + token);};
+
+//用户登录api接口
+api.updateUser = function (data) {return _request.default.put('/user', data);};
+
+//delete请求示例
+api.admUpdataRole = function (id) {return _request.default.delete('/user?id=', id);};
+
+//put请求示例
+api.admUpdataInfo = function (user) {return _request.default.put('/user', user);};
+
+//get请求示例
+api.verify = function (phone) {return _request.default.get('/user/isExits?tel=' + phone);};var _default =
+
+api;exports.default = _default;
+
+/***/ }),
+
+/***/ 12:
+/*!*********************************************************!*\
+  !*** E:/github/FruitSalesAndTravelWeb/utils/request.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _WXlogin = _interopRequireDefault(__webpack_require__(/*! ./WXlogin.js */ 13));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+
+var request = {};
+var headers = {};
+// const baseUrl = "http://120.76.200.109:8030" 
+var baseUrl = "http://localhost:8030";
+
+//39.108.220.199
+var cookie = '';
+
+request.getbaseUrl = function () {
+  return baseUrl;
+};
+
+request.post = function (url, data) {
+  var token = uni.getStorageSync('token');
+  return uni.request({
+    url: baseUrl + url,
+    method: "POST",
+    data: data,
+    dataType: 'json',
+    header: {
+      "content-type": "application/json",
+      "token": token } }).
+
+  then(function (res) {
+    if (res[1].statusCode == 423) {
+      console.log("重新登陆");
+      uni.showLoading({
+        title: '正在重新登陆...' });
+
+      _WXlogin.default.wxlogin();
+      setTimeout(function () {
+        uni.hideLoading();
+      }, 2000);
+    }
+    return res[1].data;
+  }).catch(function (resp) {
+  });
+};
+
+request.get = function (url, parmas) {
+  var token = uni.getStorageSync('token');
+  return uni.request({
+    url: baseUrl + url,
+    method: "GET",
+    data: parmas,
+    dataType: 'json',
+    header: {
+      "content-type": "application/json",
+      "token": token } }).
+
+  then(function (res) {
+    if (res[1].statusCode == 423) {
+      console.log("重新登陆");
+      _WXlogin.default.wxlogin();
+    }
+    return res[1].data;
+  }).catch(function (resp) {
+
+  });
+};
+
+request.put = function (url, data) {
+  var token = uni.getStorageSync('token');
+  return uni.request({
+    url: baseUrl + url,
+    method: "PUT",
+    data: data,
+    dataType: 'json',
+    header: {
+      "content-type": "application/json",
+      "token": token } }).
+
+  then(function (res) {
+    if (res[1].statusCode == 423) {
+      console.log("重新登陆");
+      _WXlogin.default.wxlogin();
+    }
+    return res[1].data;
+  }).catch(function (resp) {
+
+  });
+};
+
+request.delete = function (url, id) {
+  var token = uni.getStorageSync('token');
+  return uni.request({
+    url: baseUrl + url + '/' + id,
+    method: "DELETE",
+    dataType: 'json',
+    header: {
+      "content-type": "application/json",
+      "token": token } }).
+
+  then(function (res) {
+    if (res[1].statusCode == 423) {
+      console.log("重新登陆");
+      _WXlogin.default.wxlogin();
+    }
+    return res[1].data;
+  }).catch(function (resp) {
+
+  });
+};
+
+request.upload = function (url, file) {
+  var token = uni.getStorageSync('token');
+  return uni.uploadFile({
+    url: baseUrl + url,
+    filePath: file,
+    name: "img",
+    fileType: "image",
+    header: {
+      "content-type": "application/json",
+      "token": token } }).
+
+  then(function (res) {
+    if (res[1].statusCode == 423) {
+      console.log("重新登陆");
+      _WXlogin.default.wxlogin();
+    }
+    return res[1].data;
+  }).catch(function (resp) {
+
+  });
+
+};var _default =
+
+
+
+
+request;exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
+
+/***/ }),
+
+/***/ 13:
+/*!*********************************************************!*\
+  !*** E:/github/FruitSalesAndTravelWeb/utils/WXlogin.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _api = _interopRequireDefault(__webpack_require__(/*! utils/api.js */ 11));var _this = void 0;function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+
+var WXlogin = {};
+
+WXlogin.wxlogin = function () {
+  var that = _this;
+  wx.login({
+    success: function success(res) {
+      _api.default.login(res.code).then(function (res) {
+        if (res.status === 0) {
+          _api.default.getUserInfo().then(function (res) {
+            uni.switchTab({
+              url: "/pages/index/index" });
+
+          });
+        }
+      });
+    } });
+
+};var _default =
+
+WXlogin;exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
+
+/***/ }),
+
 /***/ 2:
 /*!******************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/mp-vue/dist/mp.runtime.esm.js ***!
@@ -8047,207 +8260,6 @@ internalMixin(Vue);
 
 /***/ }),
 
-/***/ 25:
-/*!*****************************************************!*\
-  !*** E:/github/FruitSalesAndTravelWeb/utils/api.js ***!
-  \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _request = _interopRequireDefault(__webpack_require__(/*! utils/request.js */ 26));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
-
-var api = {};
-
-//用户登录api接口
-api.login = function (data) {return _request.default.post('/user/login', data);};
-
-//delete请求示例
-api.admUpdataRole = function (id) {return _request.default.delete('/user?id=', id);};
-
-//put请求示例
-api.admUpdataInfo = function (user) {return _request.default.put('/user', user);};
-
-//get请求示例
-api.verify = function (phone) {return _request.default.get('/user/isExits?tel=' + phone);};var _default =
-
-api;exports.default = _default;
-
-/***/ }),
-
-/***/ 26:
-/*!*********************************************************!*\
-  !*** E:/github/FruitSalesAndTravelWeb/utils/request.js ***!
-  \*********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _WXlogin = _interopRequireDefault(__webpack_require__(/*! ./WXlogin.js */ 27));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
-
-var request = {};
-var headers = {};
-// const baseUrl = "http://120.76.200.109:8030" 
-var baseUrl = "http://localhost:8030";
-
-//39.108.220.199
-var cookie = '';
-
-request.getbaseUrl = function () {
-  return baseUrl;
-};
-
-request.post = function (url, data) {
-  headers["Cookie"] = cookie; //设置请求头cookie
-  return uni.request({
-    url: baseUrl + url,
-    method: "POST",
-    data: data,
-    dataType: 'json',
-    header: headers }).
-  then(function (res) {
-    if (res[1].statusCode == 423) {
-      console.log("重新登陆");
-      uni.showLoading({
-        title: '正在重新登陆...' });
-
-      _WXlogin.default.wxlogin();
-      setTimeout(function () {
-        uni.hideLoading();
-      }, 2000);
-    }
-    if (res[1].header['Set-Cookie']) {
-      var cookies = res[1].header['Set-Cookie'].split(';');
-      for (var i = 0; i < cookies.length; i++) {
-        if (cookies[i].indexOf("JSESSIONID") != -1) {
-          cookie = cookies[i];
-          break;
-        }
-      }
-    }
-    return res[1].data;
-  }).catch(function (resp) {
-  });
-};
-
-request.get = function (url, parmas) {
-  headers["Cookie"] = cookie; //设置请求头cookie
-  return uni.request({
-    url: baseUrl + url,
-    method: "GET",
-    data: parmas,
-    dataType: 'json',
-    header: headers }).
-  then(function (res) {
-    if (res[1].statusCode == 423) {
-      console.log("重新登陆");
-      _WXlogin.default.wxlogin();
-    }
-    return res[1].data;
-  }).catch(function (resp) {
-
-  });
-};
-
-request.put = function (url, data) {
-  headers["Cookie"] = cookie; //设置请求头cookie
-  return uni.request({
-    url: baseUrl + url,
-    method: "PUT",
-    data: data,
-    dataType: 'json',
-    header: headers }).
-  then(function (res) {
-    if (res[1].statusCode == 423) {
-      console.log("重新登陆");
-      _WXlogin.default.wxlogin();
-    }
-    return res[1].data;
-  }).catch(function (resp) {
-
-  });
-};
-
-request.delete = function (url, id) {
-  headers["Cookie"] = cookie; //设置请求头cookie
-  return uni.request({
-    url: baseUrl + url + '/' + id,
-    method: "DELETE",
-    dataType: 'json',
-    header: headers }).
-  then(function (res) {
-    if (res[1].statusCode == 423) {
-      console.log("重新登陆");
-      _WXlogin.default.wxlogin();
-    }
-    return res[1].data;
-  }).catch(function (resp) {
-
-  });
-};
-
-request.upload = function (url, file) {
-  headers["Cookie"] = cookie; //设置请求头cookie
-  return uni.uploadFile({
-    url: baseUrl + url,
-    filePath: file,
-    name: "img",
-    fileType: "image",
-    header: headers }).
-  then(function (res) {
-    if (res[1].statusCode == 423) {
-      console.log("重新登陆");
-      _WXlogin.default.wxlogin();
-    }
-    return res[1].data;
-  }).catch(function (resp) {
-
-  });
-
-};var _default =
-
-
-
-
-request;exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
-
-/***/ }),
-
-/***/ 27:
-/*!*********************************************************!*\
-  !*** E:/github/FruitSalesAndTravelWeb/utils/WXlogin.js ***!
-  \*********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _api = _interopRequireDefault(__webpack_require__(/*! utils/api.js */ 25));var _this = void 0;function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
-
-var WXlogin = {};
-
-WXlogin.wxlogin = function () {
-  var that = _this;
-  wx.login({
-    success: function success(res) {
-      _api.default.login(res.code).then(function (res) {
-        if (res.status === 0) {
-          _api.default.getUserInfo().then(function (res) {
-            uni.switchTab({
-              url: "/pages/index/index" });
-
-          });
-        }
-      });
-    } });
-
-};var _default =
-
-WXlogin;exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
-
-/***/ }),
-
 /***/ 3:
 /*!***********************************!*\
   !*** (webpack)/buildin/global.js ***!
@@ -8276,6 +8288,117 @@ try {
 
 module.exports = g;
 
+
+/***/ }),
+
+/***/ 36:
+/*!**************************************************************!*\
+  !*** E:/github/FruitSalesAndTravelWeb/utils/graceChecker.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+数据验证（表单验证）
+来自 grace.hcoder.net 
+作者 hcoder 深海
+
+版权声明 : 
+GraceUI 的版权约束是不能转售或者将 GraceUI 直接发布到公开渠道！
+侵权必究，请遵守版权约定！
+*/
+module.exports = {
+  error: '',
+  check: function check(data, rule) {
+    for (var i = 0; i < rule.length; i++) {
+      if (!rule[i].checkType) {return true;}
+      if (!rule[i].name) {return true;}
+      if (!rule[i].errorMsg) {return true;}
+      if (!data[rule[i].name]) {this.error = rule[i].errorMsg;return false;}
+      switch (rule[i].checkType) {
+        case 'string':
+          var reg = new RegExp('^.{' + rule[i].checkRule + '}$');
+          if (!reg.test(data[rule[i].name])) {this.error = rule[i].errorMsg;return false;}
+          break;
+        case 'int':
+          var reg = new RegExp('^(-[1-9]|[1-9])[0-9]{' + rule[i].checkRule + '}$');
+          if (!reg.test(data[rule[i].name])) {this.error = rule[i].errorMsg;return false;}
+          break;
+          break;
+        case 'between':
+          if (!this.isNumber(data[rule[i].name])) {
+            this.error = rule[i].errorMsg;
+            return false;
+          }
+          var minMax = rule[i].checkRule.split(',');
+          minMax[0] = Number(minMax[0]);
+          minMax[1] = Number(minMax[1]);
+          if (data[rule[i].name] > minMax[1] || data[rule[i].name] < minMax[0]) {
+            this.error = rule[i].errorMsg;
+            return false;
+          }
+          break;
+        case 'betweenD':
+          var reg = /^-?[1-9][0-9]?$/;
+          if (!reg.test(data[rule[i].name])) {this.error = rule[i].errorMsg;return false;}
+          var minMax = rule[i].checkRule.split(',');
+          minMax[0] = Number(minMax[0]);
+          minMax[1] = Number(minMax[1]);
+          if (data[rule[i].name] > minMax[1] || data[rule[i].name] < minMax[0]) {
+            this.error = rule[i].errorMsg;
+            return false;
+          }
+          break;
+        case 'betweenF':
+          var reg = /^-?[0-9][0-9]?.+[0-9]+$/;
+          if (!reg.test(data[rule[i].name])) {this.error = rule[i].errorMsg;return false;}
+          var minMax = rule[i].checkRule.split(',');
+          minMax[0] = Number(minMax[0]);
+          minMax[1] = Number(minMax[1]);
+          if (data[rule[i].name] > minMax[1] || data[rule[i].name] < minMax[0]) {
+            this.error = rule[i].errorMsg;
+            return false;
+          }
+          break;
+        case 'same':
+          if (data[rule[i].name] != rule[i].checkRule) {this.error = rule[i].errorMsg;return false;}
+          break;
+        case 'notsame':
+          if (data[rule[i].name] == rule[i].checkRule) {this.error = rule[i].errorMsg;return false;}
+          break;
+        case 'email':
+          var reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+          if (!reg.test(data[rule[i].name])) {this.error = rule[i].errorMsg;return false;}
+          break;
+        case 'phoneno':
+          var reg = /^1[0-9]{10,10}$/;
+          if (!reg.test(data[rule[i].name])) {this.error = rule[i].errorMsg;return false;}
+          break;
+        case 'zipcode':
+          var reg = /^[0-9]{6}$/;
+          if (!reg.test(data[rule[i].name])) {this.error = rule[i].errorMsg;return false;}
+          break;
+        case 'reg':
+          var reg = new RegExp(rule[i].checkRule);
+          if (!reg.test(data[rule[i].name])) {this.error = rule[i].errorMsg;return false;}
+          break;
+        case 'in':
+          if (rule[i].checkRule.indexOf(data[rule[i].name]) == -1) {
+            this.error = rule[i].errorMsg;return false;
+          }
+          break;
+        case 'notnull':
+          if (data[rule[i].name] == null || data[rule[i].name].length < 1) {this.error = rule[i].errorMsg;return false;}
+          break;}
+
+    }
+    return true;
+  },
+  isNumber: function isNumber(checkVal) {
+    checkVal = Number(checkVal);
+    if (checkVal == NaN) {return false;}
+    return true;
+  } };
 
 /***/ }),
 

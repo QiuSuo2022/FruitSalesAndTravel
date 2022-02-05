@@ -13,13 +13,16 @@ request.getbaseUrl =() =>{
 } 
 
 request.post = (url, data) => {
-	headers["Cookie"] = cookie //设置请求头cookie
+	let token = uni.getStorageSync('token')
 	return uni.request({
 		url: baseUrl + url,
 		method: "POST",
 		data: data,
 		dataType: 'json',
-		header: headers
+		header: {
+		    "content-type": "application/json",
+		    "token": token
+		},
 	}).then(res => {
 		if(res[1].statusCode == 423){
 			console.log("重新登陆")
@@ -31,28 +34,22 @@ request.post = (url, data) => {
 			    uni.hideLoading();
 			}, 2000);
 		}
-		if (res[1].header['Set-Cookie']) {
-			let cookies = res[1].header['Set-Cookie'].split(';')
-			for (let i = 0; i < cookies.length; i++) {
-				if (cookies[i].indexOf("JSESSIONID") != -1) {
-					cookie = cookies[i]
-					break
-				}
-			}
-		}
 		return res[1].data
 	}).catch(resp => {
 	})
 }
 
 request.get = (url, parmas) => {
-	headers["Cookie"] = cookie //设置请求头cookie
+	let token = uni.getStorageSync('token')
 	return uni.request({
 		url: baseUrl + url,
 		method: "GET",
 		data: parmas,
 		dataType: 'json',
-		header: headers
+		header: {
+		    "content-type": "application/json",
+		    "token": token
+		},
 	}).then(res => {
 		if(res[1].statusCode == 423){
 			console.log("重新登陆")
@@ -65,13 +62,16 @@ request.get = (url, parmas) => {
 }
 
 request.put = (url, data) => {
-	headers["Cookie"] = cookie //设置请求头cookie
+	let token = uni.getStorageSync('token')
 	return uni.request({
 		url: baseUrl + url,
 		method: "PUT",
 		data: data,
 		dataType: 'json',
-		header: headers
+		header: {
+		    "content-type": "application/json",
+		    "token": token
+		},
 	}).then(res => {
 		if(res[1].statusCode == 423){
 			console.log("重新登陆")
@@ -84,12 +84,15 @@ request.put = (url, data) => {
 }
 
 request.delete = (url, id) => {
-	headers["Cookie"] = cookie //设置请求头cookie
+	let token = uni.getStorageSync('token')
 	return uni.request({
 		url: baseUrl + url + '/' + id,
 		method: "DELETE",
 		dataType: 'json',
-		header: headers
+		header: {
+		    "content-type": "application/json",
+		    "token": token
+		},
 	}).then(res => {
 		if(res[1].statusCode == 423){
 			console.log("重新登陆")
@@ -102,13 +105,16 @@ request.delete = (url, id) => {
 }
 
 request.upload = (url, file) => {
-	headers["Cookie"] = cookie //设置请求头cookie
+	let token = uni.getStorageSync('token')
 	return uni.uploadFile({
 		url:  baseUrl + url,
 		filePath: file,
 		name: "img",
 		fileType: "image",
-		header:headers
+		header: {
+		    "content-type": "application/json",
+		    "token": token
+		},
 	}).then(res => {
 		if(res[1].statusCode == 423){
 			console.log("重新登陆")

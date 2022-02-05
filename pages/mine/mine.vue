@@ -163,15 +163,15 @@
 			},
 			
 			tapMyPost: function() {
-				wx.navigateTo({
+/* 				wx.navigateTo({
 					url: "../mypost/mypost"
-				})
+				}) */
 			},
 			
 			toMyReply() {
-				wx.navigateTo({
+/* 				wx.navigateTo({
 					url: "../my_reply/my_reply"
-				})
+				}) */
 			},
 			
 			feedback() {
@@ -192,14 +192,12 @@
 					})
 				}
 			},
-			
-			
 		},
 
 		mounted: function() {
 			const user = uni.getStorageSync('user');
-			console.log("here")
-			console.log(user)
+			// console.log("here")
+			// console.log(user)
 			if (user) {
 				this.userName = user.userName
 				this.avatarUrl = user.avatarUrl
