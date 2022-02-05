@@ -146,6 +146,7 @@
 							uni.hideLoading()
 							//将用户信息和token存在本地
 							var user = data.data
+							console.log(data)
 							uni.setStorageSync("user", user)
 							uni.setStorageSync('token', user.token)
 							that.userName = user.userName

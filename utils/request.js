@@ -2,8 +2,8 @@ import WXlogin from './WXlogin.js'
 
 const request = {}
 const headers = {}
-// const baseUrl = "http://120.76.200.109:8030" 
-const baseUrl = "http://localhost:8030" 
+const baseUrl = "http://120.76.200.109:8030" 
+// const baseUrl = "http://localhost:8030" 
 
 //39.108.220.199
 let cookie = ''
